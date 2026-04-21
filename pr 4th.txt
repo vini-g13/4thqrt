@@ -1,0 +1,169 @@
+# Claude Code Prompt — Webshop 4THQRT 
+
+## Projectomschrijving
+
+Bouw een volledige, professionele webshop voor het kledingmerk **4THQRT** (uitgesproken als "4th Quarter"). Het merk draagt een krachtige boodschap: net zoals in basketbal het laatste kwart allesbepalend is, kan je ook in het leven altijd nog terugkomen. Als het even niet meezit, heb je altijd de laatste loodjes om het tij te keren. Dit verhaal zit verweven in elk aspect van het merk.
+
+De webshop moet beschikbaar zijn in **Nederlands én Engels** (taalschakelaar voorzien).
+
+---
+
+## Logo & Merkidentiteit
+
+Het logo bestaat uit de tekst **"4THQRT"** in een bold, italic, condensed sans-serif lettertype — geen decoratie, geen icoon, puur typografie. Het bestaat in twee versies:
+- Zwarte tekst op witte achtergrond
+- Witte tekst op zwarte achtergrond
+
+Dit zegt alles over het merk: **rauw, direct, geen overbodige franjes.** De website moet deze energie volledig doortrekken.
+
+Logo bestanden:
+- `4th_wit.png` — gebruik op donkere achtergronden
+- `4th_zwart.png` — gebruik op lichte achtergronden (converteer .jfif naar .png bij gebruik)
+
+---
+
+## Design & Stijl
+
+### Kernprincipes
+Het design moet het logo weerspiegelen: **bold, minimaal, geen compromissen.** Geen zachte kleuren, geen decoratieve elementen, geen speelse vormen. Alles is intentioneel en krachtig.
+
+### Kleurenpalet — strikt zwart-wit
+- **Primair**: Zuiver zwart `#000000` en zuiver wit `#FFFFFF`
+- **Achtergrond**: Donker (zwart of zeer donkergrijs `#0a0a0a`) als basiskleur van de hele site
+- **Tekst op donker**: Wit
+- **Accenten**: Uitsluitend wit of zwart — **geen kleur**, geen goud, geen oranje, geen kleurgradiënten
+- Enige uitzondering: subtiele grijstinten (`#1a1a1a`, `#2a2a2a`) voor kaarten, hover-states en scheiding van secties
+
+### Typografie
+- **Display / titels**: Een bold, italic, condensed sans-serif die aansluit bij het logo. Gebruik **"Barlow Condensed"** (Google Fonts, weight 700-900, italic) of **"Anton"** als alternatief. Titels in hoofdletters, ruim lettergespacieerd.
+- **Body tekst**: Clean, moderne sans-serif. Gebruik **"Inter"** of **"DM Sans"** voor leesbaarheid.
+- **Stijlregel**: Grote, dominante koppen. Weinig tekst per sectie. Alles ademt ruimte.
+
+### Visuele taal
+- **Geen kleur** — het merk IS zwart-wit. Dit is een bewuste keuze, geen beperking.
+- **Geen decoratieve elementen** — geen basketbalikonen, geen vlammen, geen sterren
+- **Wel toegestaan**: subtiele texturen (licht grain overlay), scherpe schaduwen, harde randen
+- **Lay-out**: Asymmetrisch, brutaal, grid-brekend. Grote witte ruimtes afgewisseld met dense zwarte blokken.
+- **Productfoto's**: Zwart-wit gefilterd of op neutrale achtergrond — vraag dit later aan de fotograaf/vriend
+
+### Animaties
+- Scherpe, snelle transities — geen zachte fades
+- Tekst die per letter of woord inschuift (staggered reveal)
+- Hover op producten: scherpe zoom of harde kleurinversie (wit wordt zwart, zwart wordt wit)
+- Geen overdreven effecten — elk effect moet purposeful zijn
+
+### Sfeer referenties
+Denk aan de esthetiek van: **Acronym, Stone Island, Fear of God** — premium, minimaal, serieus. Gecombineerd met de directheid van sportmerken als **Nike ACG of Jordan Brand** in hun meest gestripte vorm.
+
+---
+
+## Doelgroep
+
+Jonge mensen (16–35 jaar) die zich aangesproken voelen door een motiverende, sportief-geïnspireerde lifestyle boodschap. Mensen die geloven in doorzetting, terugvechten en het laatste moment pakken.
+
+---
+
+## Pagina's / Structuur
+
+### 1. Hero / Home
+- Volledig zwart scherm bij openen
+- Het logo verschijnt centraal — groot, impactvol
+- Daarna: een korte, krachtige slogan in wit (bv. *"It's not over."* of *"Het laatste kwart bepaalt alles."*)
+- CTA-knop: "SHOP NOW" / "SHOP NU" — wit op zwart, scherpe border, geen afgeronde hoeken
+- Sfeerbeelden van de kleding (placeholder via picsum.photos, zwart-wit gefilterd via CSS `filter: grayscale(100%)`)
+
+### 2. Ons verhaal (About / Over ons)
+- Het verhaal achter 4THQRT: de basketbalinspiratie, de levensfilosofie
+- Grote typografie, weinig woorden, veel impact
+- Geschreven in beide talen (NL + EN)
+- Geen stockfoto's — enkel de tekst en het logo dragen dit
+
+### 3. Shop
+- Productgrid op zwarte achtergrond
+- Witte productnamen, scherpe productkaarten
+- Per product: naam, prijs, beschikbare maten/kleuren, foto (placeholder), "ADD TO CART" knop
+- Filteropties: categorie (t-shirt, hoodie, accessoire...)
+- Productdetailpagina: groot beeld, minimalistische info, scherpe CTA
+
+### 4. Winkelwagen & Checkout
+- Zwarte checkout pagina, witte tekst
+- Verzendgegevens (België en Nederland)
+- Betaling via **Stripe Checkout** (placeholder API keys, klaar voor productie)
+- Bevestigingspagina na bestelling
+
+### 5. Verzending & Retour
+- Levertijden en verzendkosten voor België en Nederland
+- Retourbeleid (basic template)
+
+### 6. Contact
+- Minimalistisch contactformulier
+- E-mailadres (placeholder)
+- Social media links (Instagram, TikTok)
+
+### 7. Footer
+- Zwart, clean, typografisch
+- Links: Shop, Over ons, Verzending, Privacybeleid, Algemene voorwaarden
+- Taalschakelaar NL / EN
+- BTW-nummer (placeholder)
+- Cookiebanner + privacybeleid link
+
+---
+
+## Technische vereisten
+
+- Bouw in **React** (Next.js bij voorkeur voor SEO) of HTML/CSS/JS
+- **Volledig responsive** (mobile-first) — op mobiel moet het even krachtig ogen
+- **Meertaligheid**: taalschakelaar NL / EN, alle teksten in beide talen
+- **Stripe Checkout** als betalingssysteem (placeholder keys, instructie in README)
+- **Winkelwagen**: state via React Context of localStorage
+- **Formuliervalidatie** op checkout en contactformulier
+- **SEO**: correcte meta tags, Open Graph, gestructureerde productdata
+- **GDPR**:
+  - Cookiebanner (zwart, minimalistisch, past bij de stijl)
+  - Privacybeleid pagina (template)
+  - Algemene voorwaarden (template)
+  - Checkbox bij checkout: akkoord met privacybeleid
+- **Lazy loading** voor productafbeeldingen
+- Alle afbeeldingen via CSS `filter: grayscale(100%)` tenzij de vriend bewust kleurenfoto's wil
+
+---
+
+## Verzending & Betaling
+
+- **Verzendgebied**: België en Nederland
+- **Betaling**: Stripe (ondersteunt Bancontact, creditcard, iDEAL)
+- **Verzendkosten**: placeholder (bv. €4,95 België / €6,95 Nederland, gratis vanaf €75)
+
+---
+
+## Talen
+
+Alle content in **twee talen**:
+- 🇧🇪 Nederlands
+- 🇬🇧 Engels
+
+Taalschakelaar in navigatie: simpele **NL | EN** toggle in hoofdletters, geen vlaggen.
+
+---
+
+## Placeholders die later ingevuld worden
+
+- Logo al beschikbaar: `4th_wit.png` (op donker) en `4th_zwart.png` (op licht)
+- Echte productfoto's (vervangen picsum placeholders)
+- Stripe API keys
+- Exacte productinfo (naam, prijs, maten, kleuren, beschrijving)
+- Contactgegevens (e-mail, social media handles)
+- BTW-nummer
+- Verzendkosten en levertijden
+
+---
+
+## Extra instructies
+
+- Het merkverhaal moet **emotioneel en authentiek** zijn — niet commercieel
+- De boodschap "het laatste kwart bepaalt alles" moet voelbaar zijn, niet alleen leesbaar
+- **Geen enkele kleur** buiten zwart, wit en grijstinten — dit is een harde regel
+- Knopen hebben **geen afgeronde hoeken** — alles is scherp en rechthoekig
+- De checkout flow moet zo **eenvoudig mogelijk** zijn: zo weinig mogelijk stappen
+- Schrijf een **README.md** met instructies hoe Stripe te activeren en hoe producten toe te voegen
+- Voeg CSS toe zodat productfoto's automatisch zwart-wit zijn, met een comment `/* Verwijder deze filter als je kleurenfoto's wil gebruiken */`
