@@ -217,7 +217,7 @@ export default function DropMode({ locale }: { locale: Locale }) {
             writingMode: "vertical-rl",
             textOrientation: "mixed",
             WebkitTextStroke: "1.35px rgba(255,255,255,0.06)",
-            transform: "translateX(1vw) scaleX(1.22)",
+            transform: "translate(1vw, -4.5vh) scaleX(1.22)",
             transformOrigin: "center center",
           }}
         >
