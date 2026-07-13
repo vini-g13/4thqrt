@@ -77,7 +77,6 @@ export default function DropMode({ locale }: { locale: Locale }) {
   const trimmedEmail = email.trim();
   const canSendEmail = EMAIL_RE.test(trimmedEmail);
   const trimmedKey = secretKey.trim();
-  const hasKeyInput = trimmedKey.length > 0;
   const keyVerified = keyStatus === "valid";
 
   useEffect(() => {
@@ -162,125 +161,169 @@ export default function DropMode({ locale }: { locale: Locale }) {
   }
 
   const inputClass =
-    "min-w-0 flex-1 bg-transparent text-white px-5 py-4 text-sm tracking-[0.28em] uppercase outline-none";
+    "min-w-0 flex-1 bg-transparent px-5 py-4 text-sm uppercase tracking-[0.28em] text-white outline-none sm:px-6";
   const buttonBaseClass =
-    "flex h-[54px] shrink-0 items-center justify-center self-stretch bg-white text-black border-l border-black/15 transition-all duration-200";
+    "flex h-[54px] shrink-0 items-center justify-center self-stretch border-l border-black/15 bg-white text-black transition-all duration-200";
   const emailButtonVisibleClass = canSendEmail
-    ? "w-[54px] opacity-100 cursor-pointer"
+    ? "w-[54px] cursor-pointer opacity-100"
     : "pointer-events-none w-0 overflow-hidden opacity-0";
   const keyButtonStateClass = keyVerified
-    ? "w-[54px] opacity-100 cursor-pointer"
-    : "w-[54px] opacity-55 cursor-not-allowed";
+    ? "w-[54px] cursor-pointer opacity-100"
+    : "w-[54px] cursor-not-allowed opacity-50";
   const shellClass =
-    "mx-auto flex w-full max-w-[30rem] items-stretch overflow-hidden border border-white/85 bg-white/[0.03]";
+    "mx-auto flex w-full max-w-[31rem] items-stretch overflow-hidden border border-white/80 bg-white/[0.04] shadow-[0_0_0_1px_rgba(255,255,255,0.03)] backdrop-blur-[2px] transition-colors duration-200 focus-within:border-white focus-within:bg-white/[0.06]";
   const helperTextClass =
-    "mx-auto mt-5 max-w-[22rem] text-[11px] uppercase leading-relaxed tracking-[0.22em] text-white/42";
+    "mx-auto mt-4 max-w-[22rem] text-[10px] uppercase leading-[1.8] tracking-[0.24em] text-white/42 sm:text-[11px]";
+  const errorClass =
+    "mt-5 border border-white/16 bg-white/[0.03] px-5 py-3 text-[10px] uppercase tracking-[0.24em] text-white/66 sm:text-[11px]";
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-black px-6 text-center">
+    <div className="relative flex h-[100dvh] items-center justify-center overflow-hidden bg-black px-6 py-4 text-center sm:px-8">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.035]"
+        className="pointer-events-none absolute inset-0 opacity-[0.028]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.14) 1px, transparent 1px)",
-          backgroundSize: "min(24vw, 120px) min(24vw, 120px)",
-          maskImage: "radial-gradient(circle at center, black 35%, transparent 78%)",
+            "linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.12) 1px, transparent 1px)",
+          backgroundSize: "min(24vw, 128px) min(24vw, 128px)",
+          maskImage: "radial-gradient(circle at center, black 34%, transparent 78%)",
         }}
       />
 
-      <Image
-        src="/4th_wit.png"
-        alt="4THQRT"
-        width={160}
-        height={60}
-        className="mb-14 h-auto object-contain sm:mb-16"
-        priority
-      />
-
-      <h1
-        className="mb-4 text-white font-bold italic uppercase leading-none"
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-1/2 hidden w-[48rem] -translate-x-1/2 -translate-y-[50%] select-none text-center font-black italic uppercase tracking-[0.16em] text-white/[0.026] lg:block xl:w-[56rem]"
         style={{
           fontFamily: "var(--font-display)",
-          fontSize: "clamp(2.8rem, 10vw, 7rem)",
-          letterSpacing: "0.035em",
-          whiteSpace: "pre-line",
+          fontSize: "clamp(5.2rem, 10.5vw, 9.5rem)",
+          lineHeight: 0.84,
+          WebkitTextStroke: "1px rgba(255,255,255,0.055)",
         }}
       >
-        {t.heading}
-      </h1>
+        4THQRT
+      </div>
 
-      <p
-        className="mb-12 text-sm uppercase tracking-[0.3em] text-white/40"
-        style={{ fontFamily: "var(--font-display)" }}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center lg:hidden"
       >
-        {t.sub}
-      </p>
-
-      {stage === "email" ? (
-        <>
-          <form onSubmit={handleEmailSubmit} className={shellClass}>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className={inputClass}
-              style={{ fontFamily: "var(--font-display)" }}
-              aria-label="Email"
-            />
-            <button
-              type="submit"
-              disabled={!canSendEmail || busy}
-              aria-hidden={!canSendEmail}
-              aria-label="Send email"
-              className={`${buttonBaseClass} ${emailButtonVisibleClass}`}
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              <SendPlaneIcon />
-            </button>
-          </form>
-          <p className={helperTextClass} style={{ fontFamily: "var(--font-display)" }}>
-            {t.caption}
-          </p>
-        </>
-      ) : (
-        <>
-          <form onSubmit={handleKeySubmit} className={shellClass}>
-            <input
-              type="text"
-              value={secretKey}
-              onChange={(e) => handleSecretKeyChange(e.target.value)}
-              required
-              autoFocus
-              className={inputClass}
-              style={{ fontFamily: "var(--font-display)" }}
-              aria-label="Secret key"
-            />
-            <button
-              type="submit"
-              disabled={busy || !keyVerified}
-              aria-label={keyVerified ? "Open lock" : "Check secret key"}
-              className={`${buttonBaseClass} ${keyButtonStateClass}`}
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              {keyVerified ? <LockOpenIcon /> : <LockClosedIcon />}
-            </button>
-          </form>
-          <p className={helperTextClass} style={{ fontFamily: "var(--font-display)" }}>
-            {t.sent}
-          </p>
-        </>
-      )}
-
-      {error && (
-        <p
-          className="mt-6 border border-white/30 bg-white/[0.03] px-6 py-3 text-xs uppercase tracking-[0.22em] text-white/70"
-          style={{ fontFamily: "var(--font-display)" }}
+        <div
+          className="select-none font-black italic uppercase text-white/[0.032]"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(6.4rem, 34vw, 10rem)",
+            lineHeight: 0.78,
+            letterSpacing: "-0.02em",
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
+            WebkitTextStroke: "1.35px rgba(255,255,255,0.06)",
+            transform: "translateX(1vw) scaleX(1.22)",
+            transformOrigin: "center center",
+          }}
         >
-          {error}
-        </p>
-      )}
+          4THQRT
+        </div>
+      </div>
+
+      <div className="relative z-10 flex max-h-full w-full max-w-[34rem] flex-col items-center justify-center">
+        <div className="animate-slide-up relative mb-6 sm:mb-7 lg:mb-6">
+          <Image
+            src="/4th_wit.png"
+            alt="4THQRT"
+            width={156}
+            height={58}
+            className="relative z-10 h-auto object-contain"
+            priority
+          />
+          <Image
+            src="/4th_wit.png"
+            alt=""
+            aria-hidden="true"
+            width={156}
+            height={58}
+            className="absolute left-[6px] top-[4px] h-auto object-contain opacity-12"
+          />
+        </div>
+
+        <div className="animate-slide-up-delay-1 mb-7 w-full sm:mb-8 lg:mb-7">
+          <div className="mx-auto mb-4 h-px w-14 bg-white/18 sm:w-18" />
+          <h1
+            className="mx-auto max-w-[9.5ch] text-white font-bold italic uppercase leading-[0.9]"
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "clamp(2.35rem, 6.6vw, 4.6rem)",
+              letterSpacing: "0.03em",
+              whiteSpace: "pre-line",
+            }}
+          >
+            {t.heading}
+          </h1>
+        </div>
+
+        <div className="animate-slide-up-delay-2 w-full">
+          {stage === "email" ? (
+            <>
+              <form onSubmit={handleEmailSubmit} className={shellClass}>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className={inputClass}
+                  style={{ fontFamily: "var(--font-display)" }}
+                  aria-label="Email"
+                />
+                <button
+                  type="submit"
+                  disabled={!canSendEmail || busy}
+                  aria-hidden={!canSendEmail}
+                  aria-label="Send email"
+                  className={`${buttonBaseClass} ${emailButtonVisibleClass}`}
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  <SendPlaneIcon />
+                </button>
+              </form>
+              <p className={helperTextClass} style={{ fontFamily: "var(--font-display)" }}>
+                {t.caption}
+              </p>
+            </>
+          ) : (
+            <>
+              <form onSubmit={handleKeySubmit} className={shellClass}>
+                <input
+                  type="text"
+                  value={secretKey}
+                  onChange={(e) => handleSecretKeyChange(e.target.value)}
+                  required
+                  autoFocus
+                  className={inputClass}
+                  style={{ fontFamily: "var(--font-display)" }}
+                  aria-label="Secret key"
+                />
+                <button
+                  type="submit"
+                  disabled={busy || !keyVerified}
+                  aria-label={keyVerified ? "Open lock" : "Check secret key"}
+                  className={`${buttonBaseClass} ${keyButtonStateClass}`}
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {keyVerified ? <LockOpenIcon /> : <LockClosedIcon />}
+                </button>
+              </form>
+              <p className={helperTextClass} style={{ fontFamily: "var(--font-display)" }}>
+                {t.sent}
+              </p>
+            </>
+          )}
+        </div>
+
+        {error && (
+          <p className={`${errorClass} animate-slide-up-delay-3`} style={{ fontFamily: "var(--font-display)" }}>
+            {error}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
