@@ -39,12 +39,19 @@ export default function ProductCard({ product, locale, addToCartLabel, soldOutLa
             </span>
           </div>
         )}
+        {product.inStock && product.stockPercentage !== undefined && (
+          <div className="absolute bottom-3 left-3 right-3">
+            <div className="h-1 bg-black/30" aria-label={`Stock ${product.stockPercentage}%`}>
+              <div className="h-full bg-white transition-[width]" style={{ width: `${product.stockPercentage}%` }} />
+            </div>
+          </div>
+        )}
       </div>
       <div className="p-4">
         <h3 className="text-white text-xs tracking-[0.15em] font-bold mb-2 leading-snug">
           {product.name[locale]}
         </h3>
-        <p className="text-white/60 text-sm font-bold">€{product.price.toFixed(2)}</p>
+        <p className="text-white/60 text-sm font-bold">â‚¬{product.price.toFixed(2)}</p>
       </div>
     </Link>
   );

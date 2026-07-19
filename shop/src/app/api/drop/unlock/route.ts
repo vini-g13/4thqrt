@@ -1,19 +1,18 @@
 import { cookies } from "next/headers";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
-  let key: unknown;
-  try {
-    ({ key } = await request.json());
-  } catch {
-    return Response.json({ ok: false }, { status: 400 });
+  const limit = await enforceRateLimit(request, "drop-unlock", 5, 15 * 60);
+  if (!limit.allowed) {
+    return Response.json({ ok: false, error: "try_later" }, { status: limit.reason === "limited" ? 429 : 503 });
   }
 
-  const secretKey = process.env.DROP_SECRET_KEY ?? "4THQRT";
+  let key: unknown;
+  try { ({ key } = await request.json()); } catch { return Response.json({ ok: false }, { status: 400 }); }
 
-  if (
-    typeof key !== "string" ||
-    key.trim().toUpperCase() !== secretKey.toUpperCase()
-  ) {
+  const secretKey = process.env.DROP_SECRET_KEY ?? (process.env.NODE_ENV !== "production" ? "4THQRT" : undefined);
+  if (!secretKey) return Response.json({ ok: false, error: "configuration" }, { status: 503 });
+  if (typeof key !== "string" || key.trim().toUpperCase() !== secretKey.toUpperCase()) {
     return Response.json({ ok: false }, { status: 401 });
   }
 
@@ -25,6 +24,5 @@ export async function POST(request: Request) {
     maxAge: 60 * 60 * 24 * 30,
     path: "/",
   });
-
   return Response.json({ ok: true });
 }

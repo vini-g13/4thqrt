@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useLocale } from "@/contexts/LocaleContext";
 import { getTranslations } from "@/lib/translations";
-import { products, type ProductCategory } from "@/lib/products";
+import { type ProductCategory } from "@/lib/products";
+import { useCatalog } from "@/hooks/useCatalog";
 import ProductCard from "@/components/ProductCard";
 
 type Filter = "all" | ProductCategory;
@@ -11,6 +12,7 @@ type Filter = "all" | ProductCategory;
 export default function ShopPage() {
   const { locale } = useLocale();
   const t = getTranslations(locale);
+  const products = useCatalog();
   const [filter, setFilter] = useState<Filter>("all");
 
   const filtered =

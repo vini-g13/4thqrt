@@ -4,12 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLocale } from "@/contexts/LocaleContext";
 import { getTranslations } from "@/lib/translations";
-import { products } from "@/lib/products";
+import { useCatalog } from "@/hooks/useCatalog";
 import ProductCard from "@/components/ProductCard";
 
 export default function HomePage() {
   const { locale } = useLocale();
   const t = getTranslations(locale);
+  const products = useCatalog();
   const featured = products.filter((p) => p.inStock).slice(0, 3);
 
   return (
@@ -81,7 +82,7 @@ export default function HomePage() {
             href="/over-ons"
             className="inline-block mt-8 border-2 border-black text-black text-xs tracking-[0.25em] font-bold px-8 py-3 hover:bg-black hover:text-white transition-colors duration-200"
           >
-            {locale === "nl" ? "ONS VERHAAL →" : "OUR STORY →"}
+            {locale === "nl" ? "ONS VERHAAL Ã¢â€ â€™" : "OUR STORY Ã¢â€ â€™"}
           </Link>
         </div>
       </section>
@@ -100,7 +101,7 @@ export default function HomePage() {
               href="/shop"
               className="text-white/40 text-xs tracking-[0.2em] font-bold hover:text-white transition-colors"
             >
-              {locale === "nl" ? "BEKIJK ALLES →" : "VIEW ALL →"}
+              {locale === "nl" ? "BEKIJK ALLES Ã¢â€ â€™" : "VIEW ALL Ã¢â€ â€™"}
             </Link>
           </div>
 

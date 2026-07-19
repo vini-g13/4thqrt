@@ -1,80 +1,112 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { parseCheckoutPayload, verifyCheckout } from "@/lib/checkout";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
-// Initialize Stripe with secret key from env
-// Set STRIPE_SECRET_KEY in .env.local before going live
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY ?? "sk_test_placeholder";
+function rateLimitResponse(result: Exclude<Awaited<ReturnType<typeof enforceRateLimit>>, { allowed: true }>) {
+  if (result.reason === "unavailable") {
+    return NextResponse.json({ error: "Checkout is tijdelijk niet beschikbaar." }, { status: 503 });
+  }
 
-export async function POST(req: NextRequest) {
-  if (stripeSecretKey === "sk_test_placeholder") {
-    // Demo mode: redirect to success without real Stripe
+  return NextResponse.json(
+    { error: "Te veel pogingen. Probeer later opnieuw." },
+    { status: 429, headers: { "Retry-After": String(result.retryAfterSeconds) } }
+  );
+}
+
+export async function POST(request: NextRequest) {
+  const limit = await enforceRateLimit(request, "checkout", 10, 10 * 60);
+  if (!limit.allowed) return rateLimitResponse(limit);
+
+  let payload: unknown;
+  try {
+    payload = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Ongeldige aanvraag." }, { status: 400 });
+  }
+
+  const parsed = parseCheckoutPayload(payload);
+  if (!parsed) {
+    return NextResponse.json({ error: "Controleer je winkelmandje en gegevens." }, { status: 400 });
+  }
+
+  // Prijs, voorraad en verzending komen uitsluitend van de server.
+  const checkout = await verifyCheckout(parsed.selections, parsed.locale, parsed.customerInfo);
+  if (!checkout) {
+    return NextResponse.json(
+      { error: "Een product is niet meer beschikbaar of je winkelmandje is ongeldig." },
+      { status: 409 }
+    );
+  }
+
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  const demoMode =
+    process.env.CHECKOUT_DEMO_MODE === "true" ||
+    (process.env.NODE_ENV !== "production" && !stripeSecretKey);
+
+  if (!stripeSecretKey) {
+    if (!demoMode) {
+      return NextResponse.json({ error: "Betalingen zijn nog niet geconfigureerd." }, { status: 503 });
+    }
+
     return NextResponse.json({
-      url: `${req.nextUrl.origin}/bestelling-geplaatst?demo=true`,
+      url: `${request.nextUrl.origin}/bestelling-geplaatst?demo=true`,
+      demo: true,
+      totalCents: checkout.totalCents,
     });
   }
 
   const stripe = new Stripe(stripeSecretKey, { apiVersion: "2026-03-25.dahlia" });
 
   try {
-    const { items, customerInfo, locale, shippingCost } = await req.json();
-
-    const lineItems = items.map((item: {
-      name: string;
-      price: number;
-      quantity: number;
-      image: string;
-    }) => ({
-      price_data: {
-        currency: "eur",
-        product_data: {
-          name: item.name,
-          images: [item.image],
-        },
-        unit_amount: Math.round(item.price * 100),
-      },
-      quantity: item.quantity,
-    }));
-
-    if (shippingCost > 0) {
-      lineItems.push({
-        price_data: {
-          currency: "eur",
-          product_data: {
-            name: locale === "nl" ? "Verzendkosten" : "Shipping",
-          },
-          unit_amount: Math.round(shippingCost * 100),
-        },
-        quantity: 1,
-      });
-    }
-
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card", "bancontact", "ideal"],
-      line_items: lineItems,
+      line_items: [
+        ...checkout.lines.map((line) => ({
+          price_data: {
+            currency: "eur",
+            product_data: {
+              name: line.productName,
+              images: line.image ? [line.image] : undefined,
+            },
+            unit_amount: line.unitPriceCents,
+          },
+          quantity: line.quantity,
+        })),
+        ...(checkout.shippingCents > 0
+          ? [{
+              price_data: {
+                currency: "eur",
+                product_data: {
+                  name: checkout.locale === "nl" ? "Verzendkosten" : "Shipping",
+                },
+                unit_amount: checkout.shippingCents,
+              },
+              quantity: 1,
+            }]
+          : []),
+      ],
       mode: "payment",
-      customer_email: customerInfo.email,
-      shipping_address_collection: {
-        allowed_countries: ["BE", "NL"],
-      },
-      success_url: `${req.nextUrl.origin}/bestelling-geplaatst?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.nextUrl.origin}/checkout`,
-      locale: locale === "nl" ? "nl" : "en",
+      customer_email: checkout.customerInfo.email,
+      shipping_address_collection: { allowed_countries: ["BE", "NL"] },
+      success_url: `${request.nextUrl.origin}/bestelling-geplaatst?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${request.nextUrl.origin}/checkout`,
+      locale: checkout.locale,
       metadata: {
-        firstName: customerInfo.firstName,
-        lastName: customerInfo.lastName,
-        address: customerInfo.address,
-        postal: customerInfo.postal,
-        city: customerInfo.city,
-        country: customerInfo.country,
+        firstName: checkout.customerInfo.firstName,
+        lastName: checkout.customerInfo.lastName,
+        address: checkout.customerInfo.address,
+        postal: checkout.customerInfo.postal,
+        city: checkout.customerInfo.city,
+        country: checkout.customerInfo.country,
+        checkoutVersion: "server-verified-v1",
       },
     });
 
+    if (!session.url) throw new Error("Stripe did not return a checkout URL.");
     return NextResponse.json({ url: session.url });
-  } catch (err) {
-    console.error("Stripe error:", err);
-    return NextResponse.json(
-      { error: "Stripe checkout kon niet worden aangemaakt." },
-      { status: 500 }
-    );
+  } catch (error) {
+    console.error("Stripe checkout creation failed", error);
+    return NextResponse.json({ error: "Stripe checkout kon niet worden aangemaakt." }, { status: 502 });
   }
 }

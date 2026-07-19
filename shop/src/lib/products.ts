@@ -12,13 +12,14 @@ export interface Product {
   images: string[];
   inStock: boolean;
   lowStock?: boolean; // toon "ALMOST GONE" label als true
+  stockPercentage?: number;
 }
 
 export const products: Product[] = [
   {
     id: "1",
     slug: "4thqrt-longsleeve-black",
-    name: { nl: "4THQRT LONGSLEEVE — ZWART", en: "4THQRT LONGSLEEVE — BLACK" },
+    name: { nl: "4THQRT LONGSLEEVE â€” ZWART", en: "4THQRT LONGSLEEVE â€” BLACK" },
     description: {
       nl: "De 4THQRT Longsleeve. Clean. Direct. Geen overbodige franjes. Beschikbaar in maten S tot en met XL. Verzonden in branded verpakking.",
       en: "The 4THQRT Longsleeve. Clean. Direct. No excess. Available in sizes S through XL. Shipped in branded packaging.",
@@ -37,7 +38,7 @@ export const products: Product[] = [
   {
     id: "2",
     slug: "4thqrt-longsleeve-pink",
-    name: { nl: "4THQRT LONGSLEEVE — ROZE", en: "4THQRT LONGSLEEVE — PINK" },
+    name: { nl: "4THQRT LONGSLEEVE â€” ROZE", en: "4THQRT LONGSLEEVE â€” PINK" },
     description: {
       nl: "De 4THQRT Longsleeve. Zelfde snit, andere energie. Beschikbaar in maten S tot en met XL. Verzonden in branded verpakking.",
       en: "The 4THQRT Longsleeve. Same cut, different energy. Available in sizes S through XL. Shipped in branded packaging.",
