@@ -21,37 +21,30 @@ export default function ProductCard({ product, locale, addToCartLabel, soldOutLa
           src={product.images[0]}
           alt={product.name[locale]}
           fill
-          className="object-cover grayscale transition-transform duration-300 group-hover:scale-105" /* Verwijder de grayscale class als je kleurenfoto's wil gebruiken */
+          className="object-cover grayscale transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 768px) 50vw, 33vw"
           loading="lazy"
         />
         {!product.inStock && (
-          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-            <span className="text-white text-xs tracking-[0.2em] font-bold border border-white px-4 py-2">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70">
+            <span className="border border-white px-4 py-2 text-xs font-bold tracking-[0.2em] text-white">
               {soldOutLabel}
             </span>
           </div>
         )}
         {product.inStock && product.lowStock && (
-          <div className="absolute top-3 left-3">
-            <span className="bg-white text-black text-[0.65rem] tracking-[0.18em] font-bold px-3 py-1 uppercase">
+          <div className="absolute left-3 top-3">
+            <span className="bg-white px-3 py-1 text-[0.65rem] font-bold tracking-[0.18em] text-black uppercase">
               {almostGoneLabel}
             </span>
           </div>
         )}
-        {product.inStock && product.stockPercentage !== undefined && (
-          <div className="absolute bottom-3 left-3 right-3">
-            <div className="h-1 bg-black/30" aria-label={`Stock ${product.stockPercentage}%`}>
-              <div className="h-full bg-white transition-[width]" style={{ width: `${product.stockPercentage}%` }} />
-            </div>
-          </div>
-        )}
       </div>
       <div className="p-4">
-        <h3 className="text-white text-xs tracking-[0.15em] font-bold mb-2 leading-snug">
+        <h3 className="mb-2 text-xs font-bold leading-snug tracking-[0.15em] text-white">
           {product.name[locale]}
         </h3>
-        <p className="text-white/60 text-sm font-bold">â‚¬{product.price.toFixed(2)}</p>
+        <p className="text-sm font-bold text-white/60">EUR {product.price.toFixed(2)}</p>
       </div>
     </Link>
   );

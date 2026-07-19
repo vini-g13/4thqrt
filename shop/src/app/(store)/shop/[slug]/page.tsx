@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useLocale } from "@/contexts/LocaleContext";
 import { getTranslations } from "@/lib/translations";
 import { getProductBySlug } from "@/lib/products";
+import { useCatalog } from "@/hooks/useCatalog";
 import { useCart } from "@/contexts/CartContext";
 import { notFound } from "next/navigation";
 
@@ -18,7 +19,8 @@ export default function ProductPage({ params }: Props) {
   const { locale } = useLocale();
   const t = getTranslations(locale);
   const { addItem } = useCart();
-  const product = getProductBySlug(slug);
+  const catalog = useCatalog();
+  const product = catalog.find((item) => item.slug === slug) ?? getProductBySlug(slug);
 
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -26,6 +28,14 @@ export default function ProductPage({ params }: Props) {
   const [activeImage, setActiveImage] = useState(0);
 
   if (!product) return notFound();
+
+  const selectedColorForStock = selectedColor || (product.colors.length === 1 ? product.colors[0] : "");
+  const selectedVariantStock = product.variantStock?.find(
+    (variant) => variant.size === selectedSize && variant.color === selectedColorForStock
+  );
+  const selectedStockPercentage = selectedVariantStock && selectedVariantStock.targetQuantity > 0
+    ? Math.min(100, Math.round((selectedVariantStock.availableQuantity / selectedVariantStock.targetQuantity) * 100))
+    : null;
 
   function handleAddToCart() {
     if (!selectedSize || !selectedColor) return;
@@ -93,14 +103,14 @@ export default function ProductPage({ params }: Props) {
             </h1>
 
             <p className="text-2xl text-white font-bold mb-8">
-              €{product.price.toFixed(2)}
+              EUR {product.price.toFixed(2)}
             </p>
 
             {/* Color */}
             <div className="mb-6">
               <p className="text-white/40 text-xs tracking-[0.2em] font-bold mb-3 uppercase">
                 {t.shop.color}
-                {selectedColor && <span className="text-white ml-2">— {selectedColor}</span>}
+                {selectedColor && <span className="text-white ml-2"> - {selectedColor}</span>}
               </p>
               <div className="flex gap-2 flex-wrap">
                 {product.colors.map((color) => (
@@ -123,7 +133,7 @@ export default function ProductPage({ params }: Props) {
             <div className="mb-8">
               <p className="text-white/40 text-xs tracking-[0.2em] font-bold mb-3 uppercase">
                 {t.shop.size}
-                {selectedSize && <span className="text-white ml-2">— {selectedSize}</span>}
+                {selectedSize && <span className="text-white ml-2"> - {selectedSize}</span>}
               </p>
               <div className="flex gap-2 flex-wrap">
                 {product.sizes.map((size) => (
@@ -142,6 +152,18 @@ export default function ProductPage({ params }: Props) {
               </div>
             </div>
 
+            {selectedSize && selectedVariantStock && selectedStockPercentage !== null && (
+              <div className="mb-8 border border-[#2a2a2a] p-4">
+                <div className="mb-3 flex items-center justify-between gap-4 text-[11px] font-bold tracking-[0.14em] text-white/60 uppercase">
+                  <span>STOCK: {selectedColorForStock} / {selectedSize}</span>
+                  <span>{selectedStockPercentage}%</span>
+                </div>
+                <div className="h-2 bg-white/10" aria-label={`Stock level ${selectedStockPercentage}%`}>
+                  <div className="h-full bg-white transition-[width] duration-300" style={{ width: `${selectedStockPercentage}%` }} />
+                </div>
+              </div>
+            )}
+
             {/* CTA */}
             {product.inStock ? (
               <button
@@ -157,8 +179,8 @@ export default function ProductPage({ params }: Props) {
               >
                 {added
                   ? locale === "nl"
-                    ? "TOEGEVOEGD ✓"
-                    : "ADDED ✓"
+                    ? "TOEGEVOEGD"
+                    : "ADDED"
                   : !selectedSize || !selectedColor
                   ? locale === "nl"
                     ? "SELECTEER MAAT & KLEUR"

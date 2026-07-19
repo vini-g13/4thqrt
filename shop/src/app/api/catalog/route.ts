@@ -37,6 +37,12 @@ export async function GET() {
       inStock: available > 0,
       lowStock: target > 0 && available / target <= 0.25,
       stockPercentage: target > 0 ? Math.min(100, Math.round((available / target) * 100)) : undefined,
+      variantStock: variants.map((variant) => ({
+        size: variant.size,
+        color: variant.color,
+        availableQuantity: variant.available_quantity,
+        targetQuantity: variant.target_quantity,
+      })),
     } satisfies Product;
   });
 
