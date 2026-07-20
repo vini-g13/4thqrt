@@ -156,7 +156,6 @@ export default function ProductPage({ params }: Props) {
               <div className="mb-8 border border-[#2a2a2a] p-4">
                 <div className="mb-3 flex items-center justify-between gap-4 text-[11px] font-bold tracking-[0.14em] text-white/60 uppercase">
                   <span>STOCK: {selectedColorForStock} / {selectedSize}</span>
-                  <span>{selectedStockPercentage}%</span>
                 </div>
                 <div className="h-2 bg-white/10" aria-label={`Stock level ${selectedStockPercentage}%`}>
                   <div className="h-full bg-white transition-[width] duration-300" style={{ width: `${selectedStockPercentage}%` }} />

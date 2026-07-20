@@ -40,7 +40,12 @@ export const products: Product[] = [
     ],
     inStock: true,
     lowStock: false,
-  },
+    variantStock: [
+      { size: "S", color: "Black", availableQuantity: 10, targetQuantity: 10 },
+      { size: "M", color: "Black", availableQuantity: 7, targetQuantity: 10 },
+      { size: "L", color: "Black", availableQuantity: 10, targetQuantity: 10 },
+      { size: "XL", color: "Black", availableQuantity: 10, targetQuantity: 10 },
+    ],  },
   {
     id: "2",
     slug: "4thqrt-longsleeve-pink",
@@ -59,7 +64,12 @@ export const products: Product[] = [
     ],
     inStock: true,
     lowStock: false,
-  },
+    variantStock: [
+      { size: "S", color: "Pink", availableQuantity: 10, targetQuantity: 10 },
+      { size: "M", color: "Pink", availableQuantity: 10, targetQuantity: 10 },
+      { size: "L", color: "Pink", availableQuantity: 10, targetQuantity: 10 },
+      { size: "XL", color: "Pink", availableQuantity: 10, targetQuantity: 10 },
+    ],  },
 ];
 
 export function getProductBySlug(slug: string): Product | undefined {
